@@ -21,6 +21,30 @@ namespace Cinema2026.Repo.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Cinema2026.Repo.Models.Movie", b =>
+                {
+                    b.Property<int>("movieId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("movieId"));
+
+                    b.Property<string>("genre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("rating")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("movieId");
+
+                    b.ToTable("Movies");
+                });
+
             modelBuilder.Entity("Cinema2026.Repo.Models.Person", b =>
                 {
                     b.Property<int>("Id")

@@ -1,5 +1,4 @@
-﻿using Cinema2026.API.Models;
-using Cinema2026.Repo.Interfaces;
+﻿using Cinema2026.Repo.Interfaces;
 using Cinema2026.Repo.Models;
 using Cinema2026.Repo.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -21,10 +20,22 @@ namespace Cinema2026.API.Controllers
             personRepo = r;
         }
 
-        [HttpGet]
-        public List<Person> GetPersons()
+        //[HttpGet]
+        //public List<Person> GetPersons()
+        //{
+        //    return personRepo.GetPersons();
+        //}
+
+        [HttpDelete]
+        public async Task<List<Person>> DeletePersons(int personid)
         {
-            return personRepo.GetPersons();
+            return await personRepo.DeletePersons(personid);
+        }
+
+        [HttpGet]
+        public async Task<List<Person>> GetAllPersons()
+        {
+            return await personRepo.GetAllPersons();
         }
 
 
@@ -41,7 +52,13 @@ namespace Cinema2026.API.Controllers
         //}
         #endregion Firsttry
 
-
+        // POST api/<PersonController>
+        [HttpPost]
+        public async Task<Person> Post([FromBody] Person person)
+        {
+            var Created = await personRepo.CreatePerson(person);
+            return Created;
+        }
 
 
 

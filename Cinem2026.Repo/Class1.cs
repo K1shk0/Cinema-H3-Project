@@ -1,6 +1,6 @@
 ﻿namespace Cinem2026.Repo
 {
-    public class DatabaseContext
+    public class Class1
     {
 
     }
