@@ -50,13 +50,17 @@ public class MoviesController : ControllerBase
         }
 
         Movie? MovieExists = await movieRepository.GetById(movieId);
+
         if (MovieExists == null)
         {
             return NotFound();
         }
 
-        await movieRepository.Update(movie);
+        MovieExists.name = movie.name;
+        MovieExists.rating = movie.rating;
+        MovieExists.genre = movie.genre;
 
+        await movieRepository.Update(MovieExists);
         return NoContent();
     }
 

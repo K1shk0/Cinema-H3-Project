@@ -53,14 +53,18 @@ public class SeatController : ControllerBase
             return BadRequest();
         }
 
-        Seat? existingSeat = await seatRepository.GetById(seatId);
+        Seat? SeatExists = await seatRepository.GetById(seatId);
 
-        if (existingSeat == null)
+        if (SeatExists == null)
         {
             return NotFound();
         }
 
-        await seatRepository.Update(seat);
+        SeatExists.row = seat.row;
+        SeatExists.column = seat.column;
+        SeatExists.isAvailable = seat.isAvailable;
+
+        await seatRepository.Update(SeatExists);
         return NoContent();
     }
 

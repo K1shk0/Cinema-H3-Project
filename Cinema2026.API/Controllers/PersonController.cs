@@ -44,7 +44,7 @@ namespace Cinema2026.API.Controllers
         }
 
         [HttpPut("{personId}")]
-        public async Task<IActionResult>UpdatePerson(int personId, Person person)
+        public async Task<IActionResult> UpdatePerson(int personId, Person person)
         {
             if (personId != person.Id)
             {
@@ -52,13 +52,16 @@ namespace Cinema2026.API.Controllers
             }
 
             Person? PersonExists = await personRepository.GetById(personId);
+
             if (PersonExists == null)
             {
                 return NotFound();
             }
 
-            await personRepository.Update(person);
+            PersonExists.name = person.name;
+            PersonExists.age = person.age;
 
+            await personRepository.Update(PersonExists);
             return NoContent();
         }
 

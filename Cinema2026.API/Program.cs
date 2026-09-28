@@ -25,8 +25,6 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
             errorNumbersToAdd: null);
     }));
 
-builder.Services.AddScoped<IPersonRepositories,PersonRepositories>();
-builder.Services.AddScoped<IMovieRepositories, MovieRepositories>();
 //builder.Services.AddScoped<Interface,class> ();
 
 builder.Services.AddCors(options =>
