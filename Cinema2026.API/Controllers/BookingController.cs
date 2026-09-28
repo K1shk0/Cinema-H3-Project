@@ -7,20 +7,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cinema2026.API.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
-
-	public class BookingController : ControllerBase
-	{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class BookingController : ControllerBase
+    {
         private readonly IGenericRepositories<Booking> bookingRepository;
         private readonly IGenericRepositories<Person> personRepository;
-        private readonly IGenericRepositories<Movie> movieRepository;
+        private readonly IGenericRepositories<CurrentShow> currentShowRepository;
         private readonly IGenericRepositories<Seat> seatRepository;
-        public BookingController(IGenericRepositories<Booking> bookingRepository, IGenericRepositories<Person> personRepository, IGenericRepositories<Movie> movieRepository, IGenericRepositories<Seat> seatRepository)
+
+        public BookingController(IGenericRepositories<Booking> bookingRepository, IGenericRepositories<Person> personRepository, IGenericRepositories<CurrentShow> currentShowRepository, IGenericRepositories<Seat> seatRepository)
         {
             this.bookingRepository = bookingRepository;
             this.personRepository = personRepository;
-            this.movieRepository = movieRepository;
+            this.currentShowRepository = currentShowRepository;
             this.seatRepository = seatRepository;
         }
 
@@ -32,20 +32,40 @@ namespace Cinema2026.API.Controllers
         }
 
         [HttpGet("{bookingId}")]
-		public async Task<ActionResult<Booking>> GetBookingById(int bookingId)
+        public async Task<ActionResult<Booking>> GetBookingById(int bookingId)
         {
             Booking? booking = await bookingRepository.GetById(bookingId);
+
             if (booking == null)
             {
                 return NotFound();
             }
+
             return Ok(booking);
         }
 
         [HttpPost]
         public async Task<ActionResult<Booking>> CreateBooking(Booking booking)
         {
+            Person? person = await personRepository.GetById(booking.personId);
+
+            CurrentShow? currentShow = await currentShowRepository.GetById(booking.currentShowId);
+
+            Seat? seat = await seatRepository.GetById(booking.seatId);
+
+            if (person == null || currentShow == null || seat == null)
+            {
+                return BadRequest("The person, current show, or seat doesnt exist.");
+            }
+            
+            if (seat.hallId != currentShow.hallId)
+            {
+                return BadRequest(
+                    "The selected seat does not belong to the CurrentShow hall.");
+            }
+
             Booking createdBooking = await bookingRepository.Create(booking);
+
             return CreatedAtAction(nameof(GetBookingById), new { bookingId = createdBooking.bookingId }, createdBooking);
         }
 
@@ -57,19 +77,34 @@ namespace Cinema2026.API.Controllers
                 return BadRequest();
             }
 
-            Booking? BookingExists = await bookingRepository.GetById(bookingId);
+            Booking? bookingExists = await bookingRepository.GetById(bookingId);
 
-            if (BookingExists == null)
+            if (bookingExists == null)
             {
                 return NotFound();
             }
 
-            BookingExists.personId = booking.personId;
-            BookingExists.movieId = booking.movieId;
-            BookingExists.seatId = booking.seatId;
-            BookingExists.bookingDate = booking.bookingDate;
+            Person? person = await personRepository.GetById(booking.personId);
+            CurrentShow? currentShow = await currentShowRepository.GetById(booking.currentShowId);
+            Seat? seat = await seatRepository.GetById(booking.seatId);
 
-            await bookingRepository.Update(BookingExists);
+            if (person == null || currentShow == null || seat == null)
+            {
+                return BadRequest("The person, current show, or seat doesnt exist.");
+            }
+            if (seat.hallId != currentShow.hallId)
+            {
+                return BadRequest(
+                    "The selected seat does not belong to the CurrentShow hall.");
+            }
+
+            bookingExists.personId = booking.personId;
+            bookingExists.currentShowId = booking.currentShowId;
+            bookingExists.seatId = booking.seatId;
+            bookingExists.bookingDate = booking.bookingDate;
+
+            await bookingRepository.Update(bookingExists);
+
             return NoContent();
         }
 
@@ -77,10 +112,12 @@ namespace Cinema2026.API.Controllers
         public async Task<IActionResult> DeleteBooking(int bookingId)
         {
             bool deleted = await bookingRepository.Delete(bookingId);
+
             if (!deleted)
             {
                 return NotFound();
             }
+
             return NoContent();
         }
     }

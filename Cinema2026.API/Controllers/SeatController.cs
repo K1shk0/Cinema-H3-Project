@@ -5,81 +5,99 @@ using Cinema2026.Repo.Interfaces;
 using Cinema2026.Repo.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-[Route("api/[controller]")]
-[ApiController]
-public class SeatController : ControllerBase
+namespace Cinema2026.API.Controllers
 {
-    private readonly IGenericRepositories<Seat> seatRepository;
-
-    public SeatController(IGenericRepositories<Seat> seatRepository)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class SeatController : ControllerBase
     {
-        this.seatRepository = seatRepository;
-    }
+        private readonly IGenericRepositories<Seat> seatRepository;
+        private readonly IGenericRepositories<Hall> hallRepository;
 
-    [HttpGet]
-    public async Task<ActionResult<List<Seat>>> GetAllSeats()
-    {
-        List<Seat> seats = await seatRepository.GetAll();
-        return Ok(seats);
-    }
-
-    [HttpGet("{seatId}")]
-    public async Task<ActionResult<Seat>> GetSeatById(int seatId)
-    {
-        Seat? seat = await seatRepository.GetById(seatId);
-
-        if (seat == null)
+        public SeatController(IGenericRepositories<Seat> seatRepository, IGenericRepositories<Hall> hallRepository)
         {
-            return NotFound();
+            this.seatRepository = seatRepository;
+            this.hallRepository = hallRepository;
         }
 
-        return Ok(seat);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<Seat>> CreateSeat(Seat seat)
-    {
-        Seat createdSeat = await seatRepository.Create(seat);
-
-        return CreatedAtAction(
-            nameof(GetSeatById),
-            new { seatId = createdSeat.seatId },
-            createdSeat);
-    }
-
-    [HttpPut("{seatId}")]
-    public async Task<IActionResult> UpdateSeat(int seatId, Seat seat)
-    {
-        if (seatId != seat.seatId)
+        [HttpGet]
+        public async Task<ActionResult<List<Seat>>> GetAllSeats()
         {
-            return BadRequest();
+            List<Seat> seats = await seatRepository.GetAll();
+            return Ok(seats);
         }
 
-        Seat? SeatExists = await seatRepository.GetById(seatId);
-
-        if (SeatExists == null)
+        [HttpGet("{seatId}")]
+        public async Task<ActionResult<Seat>> GetSeatById(int seatId)
         {
-            return NotFound();
+            Seat? seat = await seatRepository.GetById(seatId);
+
+            if (seat == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(seat);
         }
 
-        SeatExists.row = seat.row;
-        SeatExists.column = seat.column;
-        SeatExists.isAvailable = seat.isAvailable;
-
-        await seatRepository.Update(SeatExists);
-        return NoContent();
-    }
-
-    [HttpDelete("{seatId}")]
-    public async Task<IActionResult> DeleteSeat(int seatId)
-    {
-        bool deleted = await seatRepository.Delete(seatId);
-
-        if (!deleted)
+        [HttpPost]
+        public async Task<ActionResult<Seat>> CreateSeat(Seat seat)
         {
-            return NotFound();
+            Hall? hall = await hallRepository.GetById(seat.hallId);
+
+            if (hall == null)
+            {
+                return BadRequest("The hall does not exist.");
+            }
+
+            Seat createdSeat = await seatRepository.Create(seat);
+
+            return CreatedAtAction(nameof(GetSeatById), new { seatId = createdSeat.seatId }, createdSeat);
         }
 
-        return NoContent();
+        [HttpPut("{seatId}")]
+        public async Task<IActionResult> UpdateSeat(int seatId, Seat seat)
+        {
+            if (seatId != seat.seatId)
+            {
+                return BadRequest();
+            }
+
+            Seat? seatExists = await seatRepository.GetById(seatId);
+
+            if (seatExists == null)
+            {
+                return NotFound();
+            }
+
+            Hall? hall = await hallRepository.GetById(seat.hallId);
+
+            if (hall == null)
+            {
+                return BadRequest("The hall does not exist.");
+            }
+
+            seatExists.hallId = seat.hallId;
+            seatExists.row = seat.row;
+            seatExists.column = seat.column;
+            seatExists.isAvailable = seat.isAvailable;
+
+            await seatRepository.Update(seatExists);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{seatId}")]
+        public async Task<IActionResult> DeleteSeat(int seatId)
+        {
+            bool deleted = await seatRepository.Delete(seatId);
+
+            if (!deleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
     }
 }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cinema2026.Repo.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20260928141701_AddCurrentShows")]
+    [Migration("20260928153431_AddCurrentShows")]
     partial class AddCurrentShows
     {
         /// <inheritdoc />
@@ -48,6 +48,28 @@ namespace Cinema2026.Repo.Migrations
                     b.HasKey("bookingId");
 
                     b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("Cinema2026.Repo.Models.CurrentShow", b =>
+                {
+                    b.Property<int>("currentShowId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("currentShowId"));
+
+                    b.Property<int>("hallId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("movieId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("showDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("currentShowId");
+
+                    b.ToTable("CurrentShows");
                 });
 
             modelBuilder.Entity("Cinema2026.Repo.Models.Hall", b =>
