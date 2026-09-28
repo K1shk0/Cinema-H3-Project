@@ -40,7 +40,7 @@ namespace Cinema2026.API.Controllers
         public async Task<ActionResult<Person>> CreatePerson(Person person)
         {
             Person createdPerson = await personRepository.Create(person);
-            return CreatedAtAction(nameof(GetPersonById), new { personId = createdPerson.personId }, createdPerson);
+            return CreatedAtAction(nameof(GetPersonById), new { personId = createdPerson.Id }, createdPerson);
         }
 
         [HttpPut("{personId}")]

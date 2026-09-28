@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cinema2026.Repo.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20260928113939_AddSeats")]
+    [Migration("20260928115630_AddSeats")]
     partial class AddSeats
     {
         /// <inheritdoc />
@@ -66,6 +66,28 @@ namespace Cinema2026.Repo.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Persons");
+                });
+
+            modelBuilder.Entity("Cinema2026.Repo.Models.Seat", b =>
+                {
+                    b.Property<int>("seatId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("seatId"));
+
+                    b.Property<int>("column")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("isAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("row")
+                        .HasColumnType("int");
+
+                    b.HasKey("seatId");
+
+                    b.ToTable("Seats");
                 });
 #pragma warning restore 612, 618
         }

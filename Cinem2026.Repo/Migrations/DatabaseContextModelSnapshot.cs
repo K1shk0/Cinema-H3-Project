@@ -64,6 +64,28 @@ namespace Cinema2026.Repo.Migrations
 
                     b.ToTable("Persons");
                 });
+
+            modelBuilder.Entity("Cinema2026.Repo.Models.Seat", b =>
+                {
+                    b.Property<int>("seatId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("seatId"));
+
+                    b.Property<int>("column")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("isAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("row")
+                        .HasColumnType("int");
+
+                    b.HasKey("seatId");
+
+                    b.ToTable("Seats");
+                });
 #pragma warning restore 612, 618
         }
     }
