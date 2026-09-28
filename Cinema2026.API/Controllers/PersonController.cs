@@ -7,109 +7,70 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cinema2026.API.Controllers
 {
-    [Route("api/[controller]")] //https://localhost:7073/api/person
+    [Route("api/[controller]")]
     [ApiController]
     public class PersonController : ControllerBase
     {
-        // this class uses Repository. to do so we instance an objec
-        // variable of type PersonRepositories
+        private readonly IGenericRepositories<Person> personRepository;
 
-        IPersonRepositories personRepo;// = new PersonRepositories();
-        public PersonController(IPersonRepositories r)
+        public PersonController(IGenericRepositories<Person> personRepository)
         {
-            personRepo = r;
-        }
-
-        //[HttpGet]
-        //public List<Person> GetPersons()
-        //{
-        //    return personRepo.GetPersons();
-        //}
-
-        [HttpDelete]
-        public async Task<List<Person>> DeletePersons(int personid)
-        {
-            return await personRepo.DeletePersons(personid);
+            this.personRepository = personRepository;
         }
 
         [HttpGet]
-        public async Task<List<Person>> GetAllPersons()
+        public async Task<ActionResult<List<Person>>> GetAllPersons()
         {
-            return await personRepo.GetAllPersons();
+            List<Person> persons = await personRepository.GetAll();
+            return Ok(persons);
         }
 
+        [HttpGet("{personId}")]
+        public async Task<ActionResult<Person>> GetPersonById(int personId)
+        {
+            Person? person = await personRepository.GetById(personId);
+            if (person == null)
+            {
+                return NotFound();
+            }
+            return Ok(person);
+        }
 
-        #region Firsttry
-        //PersonRepositories personRepo;// = new PersonRepositories();
-        //public PersonController(PersonRepositories r) {
-        //    personRepo = r;
-        //}
-
-        //[HttpGet]
-        //public List<Person> GetPersons()
-        //{
-        //    return personRepo.GetPersons();
-        //}
-        #endregion Firsttry
-
-        // POST api/<PersonController>
         [HttpPost]
-        public async Task<Person> Post([FromBody] Person person)
+        public async Task<ActionResult<Person>> CreatePerson(Person person)
         {
-            var Created = await personRepo.CreatePerson(person);
-            return Created;
+            Person createdPerson = await personRepository.Create(person);
+            return CreatedAtAction(nameof(GetPersonById), new { personId = createdPerson.personId }, createdPerson);
         }
 
+        [HttpPut("{personId}")]
+        public async Task<IActionResult>UpdatePerson(int personId, Person person)
+        {
+            if (personId != person.Id)
+            {
+                return BadRequest();
+            }
 
+            Person? PersonExists = await personRepository.GetById(personId);
+            if (PersonExists == null)
+            {
+                return NotFound();
+            }
 
+            await personRepository.Update(person);
 
-        //List<Person> persons = new List<Person>()
-        //{
-        //    new Person() { Id = 1, name = "John", age = 30 },
-        //    new Person() { Id = 2, name = "Jane", age = 25 },
-        //    new Person() { Id = 3, name = "Bob", age = 40 }
-        //};
-        // using my persons list
-        //[HttpGet]
-        //public List<Person> GetPersons()
-        //{
-        //    return persons;
-        //}
-        // using an object from the list
-        //[HttpGet]
-        //public 
+            return NoContent();
+        }
 
-
-        //// GET: api/<PersonController>
-        //[HttpGet]
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
-
-        //// GET api/<PersonController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
-
-        //// POST api/<PersonController>
-        //[HttpPost]
-        //public void Post([FromBody] string value)
-        //{
-        //}
-
-        //// PUT api/<PersonController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
-
-        //// DELETE api/<PersonController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+        [HttpDelete("{personId}")]
+        public async Task<IActionResult> DeletePerson(int personId)
+        {
+            bool deleted = await personRepository.Delete(personId);
+            if (!deleted)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
     }
 }
