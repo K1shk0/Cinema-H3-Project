@@ -55,7 +55,7 @@ namespace Cinema2026.Repo.Repositories
             return person;
         }
 
-        //public Task<List<Person>> GetAllPersons()
+        //public Task<List<Person>> GetAllPersons()11112212111112
         //{ // hente alt det gøres med ToLIstAsync()
         //    throw new NotImplementedException();
         //}

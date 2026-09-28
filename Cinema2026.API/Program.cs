@@ -39,6 +39,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddScoped(typeof(IGenericRepositories<>), typeof(GenericRepositories<>));
+
 var app = builder.Build();
 app.UseCors("AllowAll");
 

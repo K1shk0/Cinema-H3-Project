@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Cinema2026.Repo.Interfaces
+﻿namespace Cinema2026.Repo.Interfaces
 {
-    internal interface IGenericRepositories
+    public interface IGenericRepositories<T> where T : class
     {
+        Task<List<T>> GetAll();
+        Task<T?> GetById(int id);
+        Task<T> Create(T entity);
+        Task<T> Update(T entity);
+        Task<bool> Delete(int id);
     }
 }
