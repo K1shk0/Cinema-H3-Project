@@ -47,55 +47,99 @@ namespace Cinema2026.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Booking>> CreateBooking(Booking booking)
         {
-            Person? person = await personRepository.GetById(booking.personId);
+            Person? person =
+                await personRepository.GetById(booking.personId);
 
-            CurrentShow? currentShow = await currentShowRepository.GetById(booking.currentShowId);
+            CurrentShow? currentShow =
+                await currentShowRepository.GetById(booking.currentShowId);
 
-            Seat? seat = await seatRepository.GetById(booking.seatId);
+            Seat? seat =
+                await seatRepository.GetById(booking.seatId);
 
             if (person == null || currentShow == null || seat == null)
             {
-                return BadRequest("The person, current show, or seat doesnt exist.");
+                return BadRequest(
+                    "The person, current show, or seat does not exist.");
             }
-            
+
             if (seat.hallId != currentShow.hallId)
             {
                 return BadRequest(
                     "The selected seat does not belong to the CurrentShow hall.");
             }
 
-            Booking createdBooking = await bookingRepository.Create(booking);
+            List<Booking> bookings = await bookingRepository.GetAll();
 
-            return CreatedAtAction(nameof(GetBookingById), new { bookingId = createdBooking.bookingId }, createdBooking);
+            bool seatAlreadyBooked = bookings.Any(existingBooking =>
+                existingBooking.currentShowId == booking.currentShowId &&
+                existingBooking.seatId == booking.seatId);
+
+            if (seatAlreadyBooked)
+            {
+                return BadRequest(
+                    "This seat is already booked for the selected CurrentShow.");
+            }
+
+            Booking createdBooking =
+                await bookingRepository.Create(booking);
+
+            return CreatedAtAction(
+                nameof(GetBookingById),
+                new { bookingId = createdBooking.bookingId },
+                createdBooking);
         }
 
         [HttpPut("{bookingId}")]
-        public async Task<IActionResult> UpdateBooking(int bookingId, Booking booking)
+        public async Task<IActionResult> UpdateBooking(
+    int bookingId,
+    Booking booking)
         {
             if (bookingId != booking.bookingId)
             {
                 return BadRequest();
             }
 
-            Booking? bookingExists = await bookingRepository.GetById(bookingId);
+            Booking? bookingExists =
+                await bookingRepository.GetById(bookingId);
 
             if (bookingExists == null)
             {
                 return NotFound();
             }
 
-            Person? person = await personRepository.GetById(booking.personId);
-            CurrentShow? currentShow = await currentShowRepository.GetById(booking.currentShowId);
-            Seat? seat = await seatRepository.GetById(booking.seatId);
+            Person? person =
+                await personRepository.GetById(booking.personId);
+
+            CurrentShow? currentShow =
+                await currentShowRepository.GetById(booking.currentShowId);
+
+            Seat? seat =
+                await seatRepository.GetById(booking.seatId);
 
             if (person == null || currentShow == null || seat == null)
             {
-                return BadRequest("The person, current show, or seat doesnt exist.");
+                return BadRequest(
+                    "The person, current show, or seat doesnt exist.");
             }
+
             if (seat.hallId != currentShow.hallId)
             {
                 return BadRequest(
-                    "The selected seat does not belong to the CurrentShow hall.");
+                    "The selected seat doesnt belong to the CurrentShow hall.");
+            }
+
+            // Add the duplicate-seat check here
+            List<Booking> bookings = await bookingRepository.GetAll();
+
+            bool seatAlreadyBooked = bookings.Any(existingBooking =>
+                existingBooking.bookingId != bookingId &&
+                existingBooking.currentShowId == booking.currentShowId &&
+                existingBooking.seatId == booking.seatId);
+
+            if (seatAlreadyBooked)
+            {
+                return BadRequest(
+                    "This seat is already booked for the selected CurrentShow.");
             }
 
             bookingExists.personId = booking.personId;
