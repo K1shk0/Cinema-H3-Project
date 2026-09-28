@@ -59,6 +59,10 @@ public class MoviesController : ControllerBase
         MovieExists.name = movie.name;
         MovieExists.rating = movie.rating;
         MovieExists.genre = movie.genre;
+        MovieExists.description = movie.description;
+        MovieExists.requiredAge = movie.requiredAge;
+        MovieExists.duration = movie.duration;
+        MovieExists.cover = movie.cover;
 
         await movieRepository.Update(MovieExists);
         return NoContent();

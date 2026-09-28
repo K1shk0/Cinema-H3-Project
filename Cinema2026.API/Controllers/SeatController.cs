@@ -1,7 +1,9 @@
-﻿using Cinema2026.Repo.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using Cinema2026.Repo.Data;
 using Cinema2026.Repo.Models;
-using Microsoft.AspNetCore.Mvc;
+using Cinema2026.Repo.Interfaces;
 using Cinema2026.Repo.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 [Route("api/[controller]")]
 [ApiController]

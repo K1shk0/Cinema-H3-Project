@@ -4,6 +4,7 @@ using Cinema2026.Repo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cinema2026.Repo.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260928135235_AddPersonEmail")]
+    partial class AddPersonEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,26 +48,6 @@ namespace Cinema2026.Repo.Migrations
                     b.HasKey("bookingId");
 
                     b.ToTable("Bookings");
-                });
-
-            modelBuilder.Entity("Cinema2026.Repo.Models.Hall", b =>
-                {
-                    b.Property<int>("hallId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("hallId"));
-
-                    b.Property<int>("capacity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("hallId");
-
-                    b.ToTable("Halls");
                 });
 
             modelBuilder.Entity("Cinema2026.Repo.Models.Movie", b =>

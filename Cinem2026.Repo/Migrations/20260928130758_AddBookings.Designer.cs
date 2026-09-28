@@ -4,6 +4,7 @@ using Cinema2026.Repo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cinema2026.Repo.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260928130758_AddBookings")]
+    partial class AddBookings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,26 +50,6 @@ namespace Cinema2026.Repo.Migrations
                     b.ToTable("Bookings");
                 });
 
-            modelBuilder.Entity("Cinema2026.Repo.Models.Hall", b =>
-                {
-                    b.Property<int>("hallId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("hallId"));
-
-                    b.Property<int>("capacity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("hallId");
-
-                    b.ToTable("Halls");
-                });
-
             modelBuilder.Entity("Cinema2026.Repo.Models.Movie", b =>
                 {
                     b.Property<int>("movieId")
@@ -74,17 +57,6 @@ namespace Cinema2026.Repo.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("movieId"));
-
-                    b.Property<string>("cover")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("duration")
-                        .HasColumnType("int");
 
                     b.Property<string>("genre")
                         .IsRequired()
@@ -96,9 +68,6 @@ namespace Cinema2026.Repo.Migrations
 
                     b.Property<decimal>("rating")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("requiredAge")
-                        .HasColumnType("int");
 
                     b.HasKey("movieId");
 
@@ -115,10 +84,6 @@ namespace Cinema2026.Repo.Migrations
 
                     b.Property<int>("age")
                         .HasColumnType("int");
-
-                    b.Property<string>("email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("name")
                         .IsRequired()

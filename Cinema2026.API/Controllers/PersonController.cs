@@ -1,7 +1,9 @@
-﻿using Cinema2026.Repo.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using Cinema2026.Repo.Data;
 using Cinema2026.Repo.Models;
+using Cinema2026.Repo.Interfaces;
 using Cinema2026.Repo.Repositories;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -60,6 +62,7 @@ namespace Cinema2026.API.Controllers
 
             PersonExists.name = person.name;
             PersonExists.age = person.age;
+            PersonExists.email = person.email;
 
             await personRepository.Update(PersonExists);
             return NoContent();
