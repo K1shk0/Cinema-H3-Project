@@ -53,7 +53,61 @@ namespace Cinema2026.Test.RepositoriesTest
             var person = await repository.GetById(1);
             // Assert
             Assert.NotNull(person);
-            Assert.Equal(1, person.Id);
+            Assert.Equal(67, person.Id);
+        }
+
+        [Fact]
+        public async Task Create_Adds_New_Person()
+        {
+            // Arrange
+            Person person = new Person() { Id = 3, name = "Peter Parker", age = 20, email = "peter@example.com" };
+
+            // Act
+            await repository.Create(person);
+            var persons = await repository.GetAll();
+
+            // Assert
+            Assert.Equal(3, persons.Count);
+        }
+
+        [Fact]
+        public async Task Update_Changes_Person_Name()
+        {
+            // Arrange
+            var person = await repository.GetById(1);
+            Assert.NotNull(person);
+
+            person.name = "John Updated";
+
+            // Act
+            await repository.Update(person);
+            var updatedPerson = await repository.GetById(1);
+
+            // Assert
+            Assert.NotNull(updatedPerson);
+            Assert.Equal("John Smith", updatedPerson.name);
+        }
+
+        [Fact]
+        public async Task Delete_Removes_Person()
+        {
+            // Act
+            bool deleted = await repository.Delete(1);
+            var person = await repository.GetById(1);
+
+            // Assert
+            Assert.True(deleted);
+            Assert.Null(person);
+        }
+
+        [Fact]
+        public async Task Delete_Returns_False_When_Person_Does_Not_Exist()
+        {
+            // Act
+            bool deleted = await repository.Delete(100);
+
+            // Assert
+            Assert.False(deleted);
         }
 
     }
