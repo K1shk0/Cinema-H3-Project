@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="Cinem2026.Repo/Cinema2026.Repo.csproj" />
   <Project Path="Cinema2026.API/Cinema2026.API.csproj" />
+  <Project Path="Cinema2026.Test/Cinema2026.Test.csproj" Id="a7fe9f3f-6ca4-45ec-8011-d547d323fde3" />
 </Solution>
